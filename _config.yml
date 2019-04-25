@@ -11,8 +11,9 @@ description: .....
 # رابط صورة المدونة
 # لإستخدام صورة هويتك في GitHub ضع https://github.com/<اسم_المستخدم>.png في المتغير، مثلا لهويتي الشخصية أستخدم:
 # avatar: https://github.com/a3ammar.png
+# https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/jekyll-logo.png
 # ولإخفاء الصورة نهائيًا احذف الرابط من المتغير
-avatar: https://raw.githubusercontent.com/barryclark/jekyll-now/master/images/jekyll-logo.png
+avatar: 
 
 
 #
