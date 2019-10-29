@@ -9,21 +9,3 @@ title: مدونتك الآن جاهزة!
 
 أسهل طريقة للبدأ بالتدوين هو تعديل على محتويات هذا الملف. إذهب إلى مجلد `_posts/` وعدل على الملف `2017-1-3-Hello-World.md`. لمزيد من المعلومات زر [صفحة المدونة](https://github.com/a3ammar/jekyll-now) على GitHub
 
-
-<table >
-  <tr>
-    <th>Firstname</th>
-    <th>Lastname</th>
-    <th>Age</th>
-  </tr>
-  <tr>
-    <td>Jill</td>
-    <td>Smith</td>
-    <td>50</td>
-  </tr>
-  <tr>
-    <td>Eve</td>
-    <td>Jackson</td>
-    <td>94</td>
-  </tr>
-</table>
