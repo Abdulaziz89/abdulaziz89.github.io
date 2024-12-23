@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة الرهن العقاري</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@1.8.1/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            //...
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background: linear-gradient(135deg, #f0f2ff, #fbeeff);
+            transition: background 0.3s ease;
+        }
+
+        body.dark {
+            background: linear-gradient(135deg, #374151, #4b5563);
+        }
+
+        .duration-box {
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: center;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .duration-box.active {
+            background-color: #e0f2fe;
+            border-color: #93c5fd;
+            color: #1e40af;
+        }
+
+        .duration-box.active.dark {
+            background-color: #4b5563;
+            border-color: #93c5fd;
+            color: white;
+        }
+
+        .calculation-tab label {
+            font-weight: 500;
+        }
+
+        .downpayment-toggle-container {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            background-color: #f3f4f6;
+            padding: 0.2rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.3s;
+        }
+
+        .downpayment-toggle-container:hover {
+            background-color: #e0f2fe;
+
+        }
+        .downpayment-toggle-container:hover.dark{
+          background-color: #4b5563;
+        }
+        .downpayment-toggle-container.dark {
+            background-color: #374151;
+            color:white
+        }
+           .downpayment-toggle-container.dark:hover {
+            background-color: #4b5563;
+             color:white
+        }
+
+         .downpayment-toggle-circle {
+            width: 1.15rem;
+             height: 1.15rem;
+            border-radius: 50%;
+            background-color: #fff;
+             transition: transform 0.3s;
+             box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.1);
+              display: flex;
+                align-items: center;
+                justify-content: center;
+        }
+
+        .downpayment-toggle-circle.percent {
+            transform: translateX(0);
+             background-color: #e0f2fe;
+             color: #1e40af;
+        }
+        .downpayment-toggle-circle.percent.dark{
+          background-color: #4b5563;
+           color: white;
+        }
+
+
+         .downpayment-toggle-circle.amount {
+            transform: translateX(100%);
+             background-color: #e0f2fe;
+            color: #1e40af;
+        }
+         .downpayment-toggle-circle.amount.dark{
+          background-color: #4b5563;
+          color: white;
+        }
+    </style>
+    <script>
+        function calculateAffordability() {
+            const salary = parseFloat(document.getElementById('salary').value.replace(/,/g, ''));
+            const duration = parseInt(document.getElementById('duration').value);
+            const rate = parseFloat(document.getElementById('rate').value) / 100;
+            const dbr = 0.65; // Fixed DBR
+
+            if (!isNaN(salary) && !isNaN(duration) && !isNaN(rate)) {
+                const monthlyRate = rate / 12;
+                const maxMonthlyPayment = salary * dbr;
+                const principal = (maxMonthlyPayment * ((1 + monthlyRate) ** (duration * 12) - 1)) / (monthlyRate * (1 + monthlyRate) ** (duration * 12));
+
+                if ((maxMonthlyPayment / salary) > dbr) {
+                    document.getElementById('results').innerHTML = `
+                        <div class="p-4 bg-red-100 text-red-700 rounded">
+                            <p>لا يمكن القرض، نسبة الدخل تتجاوز 65%</p>
+                        </div>`;
+                } else {
+                    document.getElementById('results').innerHTML = `
+                      <div class="bg-white shadow-lg rounded-lg p-6 mt-6 transition-opacity duration-300 dark:bg-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">نتائج الحساب</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <i class="fas fa-money-bill-wave mr-2 text-gray-500 dark:text-gray-400"></i>
+                                <span class="font-semibold text-gray-700 dark:text-gray-300">الحد الأقصى لمبلغ القرض:</span>
+                                <span class="ml-2 font-bold text-blue-600 dark:text-blue-400">${principal.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2
+                                })} ريال</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-hand-holding-usd mr-2 text-gray-500 dark:text-gray-400"></i>
+                                <span class="font-semibold text-gray-700 dark:text-gray-300">الدفعة الشهرية:</span>
+                                <span class="ml-2 font-bold text-blue-600 dark:text-blue-400">${maxMonthlyPayment.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2
+                                })} ريال</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-coins mr-2 text-gray-500 dark:text-gray-400"></i>
+                                <span class="font-semibold text-gray-700 dark:text-gray-300">إجمالي القرض:</span>
+                                <span class="ml-2 font-bold text-blue-600 dark:text-blue-400">${(principal + (principal * rate)).toLocaleString('en-US', {
+                                    minimumFractionDigits: 2
+                                })} ريال</span>
+                            </div>
+                        </div>
+                       </div>`;
+                }
+            }
+        }
+
+        function calculatePayment() {
+            const housePrice = parseFloat(document.getElementById('housePrice').value.replace(/,/g, ''));
+            let downPayment = parseFloat(document.getElementById('downPayment').value.replace(/,/g, '') || 0);
+            const duration = parseInt(document.getElementById('loanDuration').value);
+            const rate = parseFloat(document.getElementById('interestRate').value) / 100;
+            const salary = parseFloat(document.getElementById('monthlySalary').value.replace(/,/g, ''));
+            const dbr = 0.65; // Fixed DBR
+            const downPaymentType = document.getElementById('downPaymentType').value;
+            if (downPaymentType === 'percent') {
+                downPayment = (housePrice * (downPayment / 100));
+            }
+
+            if (!isNaN(housePrice) && !isNaN(duration) && !isNaN(rate)) {
+                const loanAmount = housePrice - downPayment;
+                const monthlyRate = rate / 12;
+                const monthlyPayment = (loanAmount * monthlyRate * (1 + monthlyRate) ** (duration * 12)) / ((1 + monthlyRate) ** (duration * 12) - 1);
+
+                if (salary && (monthlyPayment > salary * dbr)) {
+                    document.getElementById('results').innerHTML = `
+                        <div class="p-4 bg-red-100 text-red-700 rounded">
+                            <p>الدفعة تتجاوز حد 65% من دخلك.</p>
+                        </div>`;
+                } else {
+                    document.getElementById('results').innerHTML = `
+                     <div class="bg-white shadow-lg rounded-lg p-6 mt-6 transition-opacity duration-300 dark:bg-gray-700">
+                        <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">نتائج الحساب</h2>
+                         <div class="space-y-3">
+                             <div class="flex items-center">
+                                 <i class="fas fa-hand-holding-usd mr-2 text-gray-500 dark:text-gray-400"></i>
+                                 <span class="font-semibold text-gray-700 dark:text-gray-300">مبلغ القرض:</span>
+                                 <span class="ml-2 font-bold text-blue-600 dark:text-blue-400">${loanAmount.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2
+                                })} ريال</span>
+                            </div>
+                           <div class="flex items-center">
+                                 <i class="fas fa-money-bill-wave mr-2 text-gray-500 dark:text-gray-400"></i>
+                                 <span class="font-semibold text-gray-700 dark:text-gray-300">الدفعة الشهرية:</span>
+                                <span class="ml-2 font-bold text-blue-600 dark:text-blue-400">${monthlyPayment.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2
+                                })} ريال</span>
+                            </div>
+                            <div class="flex items-center">
+                                 <i class="fas fa-chart-line mr-2 text-gray-500 dark:text-gray-400"></i>
+                                 <span class="font-semibold text-gray-700 dark:text-gray-300">إجمالي الفائدة:</span>
+                                <span class="ml-2 font-bold text-blue-600 dark:text-blue-400">${(monthlyPayment * duration * 12 - loanAmount).toLocaleString('en-US', {
+                                    minimumFractionDigits: 2
+                                })} ريال</span>
+                           </div>
+                        </div>
+                     </div>
+                    `;
+                }
+            }
+        }
+
+
+        function switchTab(tabId) {
+            const tabs = ['affordabilityTab', 'paymentTab'];
+            tabs.forEach(tab => {
+                const button = document.getElementById(`${tab}Button`);
+                const content = document.getElementById(tab);
+                if (tab === tabId) {
+                    button.classList.add('border-blue-500', 'text-blue-500', 'dark:border-blue-400', 'dark:text-blue-400');
+                    button.classList.remove('text-gray-500', 'dark:text-gray-400');
+                    content.classList.remove('hidden');
+                } else {
+                    button.classList.remove('border-blue-500', 'text-blue-500', 'dark:border-blue-400', 'dark:text-blue-400');
+                    button.classList.add('text-gray-500', 'dark:text-gray-400');
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+
+        function formatNumberInput(event) {
+            const input = event.target;
+            let value = input.value.replace(/,/g, '');
+            if (!isNaN(value) && value !== '') {
+                input.value = parseFloat(value).toLocaleString('en-US');
+            } else if (value === '') {
+                input.value = '';
+            }
+        }
+
+        document.addEventListener('input', () => {
+            const activeTab = document.querySelector('.border-blue-500')?.id.replace('Button', '');
+            if (activeTab === 'affordabilityTab') calculateAffordability();
+            if (activeTab === 'paymentTab') calculatePayment();
+        });
+        function handleDownPaymentToggle() {
+            const toggleContainer = document.getElementById('downPaymentToggleContainer');
+            const toggleCircle = document.getElementById('downPaymentToggleCircle');
+            const input = document.getElementById('downPayment');
+            const downPaymentTypeInput = document.getElementById('downPaymentType');
+            if (toggleCircle.classList.contains('percent')) {
+                toggleCircle.classList.remove('percent');
+                toggleCircle.classList.add('amount');
+                downPaymentTypeInput.value = 'amount';
+                input.placeholder = "أدخل الدفعة الأولى";
+            } else {
+                toggleCircle.classList.remove('amount');
+                toggleCircle.classList.add('percent');
+                downPaymentTypeInput.value = 'percent';
+                input.placeholder = "أدخل الدفعة الأولى (%)";
+            }
+              if (document.getElementById('paymentTab').classList.contains('hidden') === false) {
+                 calculatePayment()
+             }
+        }
+        function handleDurationClick(duration) {
+            const durationBoxes = document.querySelectorAll('.duration-box');
+            durationBoxes.forEach(box => box.classList.remove('active'));
+
+            const selectedBox = document.querySelector(`[data-duration="${duration}"]`);
+            if (selectedBox) {
+                selectedBox.classList.add('active');
+                document.getElementById('duration').value = duration;
+                document.getElementById('loanDuration').value = duration;
+            }
+             if (document.getElementById('affordabilityTab').classList.contains('hidden') === false ) {
+                 calculateAffordability()
+            } else if ( document.getElementById('paymentTab').classList.contains('hidden') === false) {
+                 calculatePayment()
+             }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            switchTab('affordabilityTab');
+        });
+
+
+    </script>
+</head>
+
+<body class="p-6 transition-all duration-300 ease-in-out">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-700 p-8 rounded-lg shadow-xl transition-all duration-300 ease-in-out bg-opacity-80 dark:bg-opacity-80">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-calculator text-2xl text-blue-500 dark:text-blue-400 mr-2"></i>
+                <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-gray-100">حاسبة الرهن العقاري</h1>
+            </div>
+
+        </div>
+        <p class="text-gray-600 text-center mb-6 dark:text-gray-300">اكتشف كم يمكنك الاقتراض أو احسب دفعاتك الشهرية بسهولة.</p>
+
+        <ul class="flex border-b mb-6 dark:border-gray-600" role="tablist">
+            <li class="mr-2" role="presentation">
+                <button id="affordabilityTabButton" onclick="switchTab('affordabilityTab')"
+                    class="inline-block px-4 py-2 font-semibold text-blue-500 border-b-2 border-blue-500 dark:border-blue-400 dark:text-blue-400 transition-colors duration-300"
+                    role="tab">كم أستطيع الاقتراض؟</button>
+            </li>
+            <li role="presentation">
+                <button id="paymentTabButton" onclick="switchTab('paymentTab')"
+                    class="inline-block px-4 py-2 font-semibold text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 border-b-2 border-transparent transition-colors duration-300"
+                    role="tab">كم ستكون الدفعة الشهرية؟</button>
+            </li>
+        </ul>
+
+        <div id="affordabilityTab" class="calculation-tab" role="tabpanel">
+            <div class="mb-4 relative">
+                <label for="salary" class="block mb-2 text-gray-800 dark:text-gray-100">الراتب الشهري (ريال):</label>
+                <div class="relative">
+                    <input type="text" id="salary"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
+                        placeholder="أدخل راتبك الشهري" oninput="formatNumberInput(event)">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <i class="fas fa-money-bill-wave text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2 text-gray-800 dark:text-gray-100">مدة القرض (بالسنوات):</label>
+                <div class="flex gap-2">
+                    <div class="duration-box" data-duration="10" onclick="handleDurationClick(10)">10</div>
+                    <div class="duration-box" data-duration="15" onclick="handleDurationClick(15)">15</div>
+                    <div class="duration-box" data-duration="20" onclick="handleDurationClick(20)">20</div>
+                    <div class="duration-box" data-duration="25" onclick="handleDurationClick(25)">25</div>
+                </div>
+                <input type="hidden" id="duration" value="">
+            </div>
+
+            <div class="mb-4 relative">
+                <label for="rate" class="block mb-2 text-gray-800 dark:text-gray-100">نسبة الفائدة السنوية (%):</label>
+                <div class="relative">
+                    <input type="number" id="rate" step="0.01"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
+                        value="3.6">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <i class="fas fa-percent text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="paymentTab" class="calculation-tab hidden" role="tabpanel">
+            <div class="mb-4 relative">
+                <label for="housePrice" class="block mb-2 text-gray-800 dark:text-gray-100">سعر المنزل (ريال):</label>
+                <div class="relative">
+                    <input type="text" id="housePrice"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
+                        placeholder="أدخل سعر المنزل" oninput="formatNumberInput(event)">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <i class="fas fa-home text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4 relative">
+                <label for="downPayment" class="block mb-2 text-gray-800 dark:text-gray-100">الدفعة الأولى:</label>
+                <div class="relative flex items-center">
+                    <input type="text" id="downPayment"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
+                        placeholder="أدخل الدفعة الأولى" oninput="formatNumberInput(event)">
+                   <div id="downPaymentToggleContainer" class="downpayment-toggle-container" onclick="handleDownPaymentToggle()">
+                      <div id="downPaymentToggleCircle" class="downpayment-toggle-circle percent">
+                          <i class="fas fa-percent text-gray-400  dark:text-gray-500"></i>
+                      </div>
+                    </div>
+
+                    <input type="hidden" id="downPaymentType" value="percent">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-2 text-gray-800 dark:text-gray-100">مدة القرض (بالسنوات):</label>
+                <div class="flex gap-2">
+                    <div class="duration-box" data-duration="10" onclick="handleDurationClick(10)">10</div>
+                    <div class="duration-box" data-duration="15" onclick="handleDurationClick(15)">15</div>
+                    <div class="duration-box" data-duration="20" onclick="handleDurationClick(20)">20</div>
+                    <div class="duration-box" data-duration="25" onclick="handleDurationClick(25)">25</div>
+                </div>
+                <input type="hidden" id="loanDuration" value="">
+            </div>
+            <div class="mb-4 relative">
+                <label for="interestRate" class="block mb-2 text-gray-800 dark:text-gray-100">نسبة الفائدة السنوية (%):</label>
+                <div class="relative">
+                    <input type="number" id="interestRate" step="0.01"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
+                        value="3.6">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <i class="fas fa-percent text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4 relative">
+                <label for="monthlySalary" class="block mb-2 text-gray-800 dark:text-gray-100">الراتب الشهري (اختياري، لفحص نسبة الدخل):</label>
+                <div class="relative">
+                    <input type="text" id="monthlySalary"
+                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
+                        placeholder="أدخل راتبك الشهري" oninput="formatNumberInput(event)">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <i class="fas fa-money-bill-wave text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results" class="mt-6 text-center">
+            <p class="text-gray-500 dark:text-gray-400">النتائج ستظهر هنا...</p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.1/dist/flowbite.min.js"></script>
+
+</body>
+
+</html>
