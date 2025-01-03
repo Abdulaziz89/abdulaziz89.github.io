@@ -90,7 +90,15 @@
           .dark .result-card .result-label {
                 color: #d1d5db;
             }
-
+           .interest-note {
+              font-size: 0.875rem;
+              color: #ef4444;
+                margin-top: 0.5rem;
+               font-weight: bold;
+           }
+          .dark .interest-note {
+               color: #fca5a5;
+           }
 
     </style>
     <script>
@@ -114,15 +122,17 @@
             }
         }
 
-        // Shared calculation logic
-        function calculateLoan(loanAmount, duration, rate) {
-            const monthlyRate = rate / 12;
-            const monthlyPayment = (loanAmount * monthlyRate * (1 + monthlyRate) ** (duration * 12)) / ((1 + monthlyRate) ** (duration * 12) - 1);
-            return {
-                monthlyPayment,
-                totalInterest: monthlyPayment * duration * 12 - loanAmount,
-            };
-        }
+       // Shared calculation logic for interest-only loan
+    function calculateLoan(loanAmount, duration, rate) {
+        const monthlyRate = rate / 12;
+        const monthlyPayment = loanAmount * monthlyRate;
+        const totalInterest = monthlyPayment * duration * 12;
+
+        return {
+            monthlyPayment,
+            totalInterest,
+        };
+    }
 
          function displayResults(results) {
             const resultContainer = document.getElementById('results');
@@ -136,8 +146,13 @@
                     <span class="result-label">${label}</span>
                     <span class="result-value">${Math.round(value).toLocaleString('en-US')} ريال</span>
                 `;
+                 if (label === 'إجمالي الفائدة'){
+                       const interestNote = document.createElement('p');
+                        interestNote.classList.add('interest-note');
+                        interestNote.textContent = '*يجب سداد كامل مبلغ القرض في نهاية المدة';
+                        resultCard.appendChild(interestNote);
+                    }
                 resultContainer.appendChild(resultCard);
-
              });
            }
 
@@ -154,8 +169,9 @@
 
             const monthlyRate = rate / 12;
             const maxMonthlyPayment = salary * dbr;
-            const principal = (maxMonthlyPayment * ((1 + monthlyRate) ** (duration * 12) - 1)) / (monthlyRate * (1 + monthlyRate) ** (duration * 12));
-            const totalLoanAmount = maxMonthlyPayment * duration * 12;
+            const principal = maxMonthlyPayment / monthlyRate;
+
+              const totalLoanAmount = maxMonthlyPayment * duration * 12;
 
 
             if ((maxMonthlyPayment / salary) > dbr) {
@@ -180,6 +196,7 @@
                         label: "إجمالي القرض",
                         value: totalLoanAmount,
                     },
+
                 ]);
             }
         }
@@ -190,7 +207,7 @@
             const duration = parseInt(document.getElementById('loanDuration').value);
             const rate = parseFloat(document.getElementById('interestRate').value) / 100;
              const salary = parseFloat(document.getElementById('monthlySalary').value.replace(/,/g, ''));
-            const dbr = 0.65; // Fixed DBR
+             const dbr = 0.65; // Fixed DBR
 
             if (isNaN(housePrice) || isNaN(duration) || isNaN(rate) || housePrice < 0 || duration <= 0 || rate < 0) {
                 document.getElementById('results').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded"><p>الرجاء إدخال قيم صحيحة.</p></div>`;
@@ -222,6 +239,7 @@
                             label: "إجمالي الفائدة",
                             value: totalInterest,
                         },
+
                     ]);
                 }
         }
