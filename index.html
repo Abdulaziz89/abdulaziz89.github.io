@@ -1,477 +1,313 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
+<html lang="ar" dir="rtl" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة التمويل العقاري</title>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@1.8.1/dist/flowbite.min.css" rel="stylesheet" />
+    <title>تمويل بلس - حاسبة التمويل العقاري</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            background: linear-gradient(135deg, #f0f2ff, #fbeeff);
-            transition: background 0.3s ease;
+            font-family: 'Cairo', sans-serif;
         }
 
-        body.dark {
-            background: linear-gradient(135deg, #374151, #4b5563);
+        input[type="number"] {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            text-align: right !important;
+            padding-right: 16px !important;
+            padding-left: 80px !important;
         }
 
-        .duration-box {
-            cursor: pointer;
-            border: 1px solid #e2e8f0;
-            padding: 0.75rem;
-            text-align: center;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s, border-color 0.2s;
+        /* Remove number input arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
-        .duration-box.active {
-            background-color: #e0f2fe;
-            border-color: #93c5fd;
-            color: #1e40af;
+        .currency-symbol {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6B7280;
+            pointer-events: none;
         }
 
-        .duration-box.active.dark {
-            background-color: #4b5563;
-            border-color: #93c5fd;
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            background: #1f2937;
             color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            opacity: 0;
+            transform: translateY(1rem);
+            animation: slideIn 0.3s ease forwards;
         }
 
-        .calculation-tab label {
-            font-weight: 500;
-        }
-        .result-card {
-            background-color: white;
-             border-radius: 0.75rem; /* Rounded corners */
-            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 1rem;
-            text-align: center;
-             transition: transform 0.3s ease, box-shadow 0.3s ease; /* Add transition */
-        }
-        .result-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-
-        }
-
-
-         .dark .result-card {
-            background-color: #4b5563;
-            color:white
-         }
-          .result-card .result-value {
-            font-size: 1.5rem;
-             font-weight: bold;
-            margin-top: 0.5rem;
-              color: #1e40af;
-           }
-        .dark .result-card .result-value{
-             color: #93c5fd;
-        }
-
-
-        .result-card .result-label {
-            color: #6b7280;
-            font-size: 1rem;
-               }
-          .dark .result-card .result-label {
-                color: #d1d5db;
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-           .interest-note {
-              font-size: 0.875rem;
-              color: #ef4444;
-                margin-top: 0.5rem;
-               font-weight: bold;
-           }
-          .dark .interest-note {
-               color: #fca5a5;
-           }
-
+        }
     </style>
+</head>
+<body class="h-full">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center">
+                <span class="text-2xl font-bold text-gray-900">
+                    
+                    <span class="text-blue-600">تمويل</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">حاسبة التمويل العقاري</h1>
+            <p class="mt-2 text-lg text-gray-600">احسب قسطك الشهري بدقة عالية </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="space-y-6">
+                    <!-- Salary Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">الراتب الشهري</label>
+                        <div class="relative">
+                            <input
+                                type="number"
+                                id="salary"
+                                class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                value="80000"
+                            >
+                            <span class="currency-symbol">ريال</span>
+                        </div>
+                    </div>
+
+                    <!-- Loan Amount Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">مبلغ التمويل</label>
+                        <div class="relative">
+                            <input
+                                type="number"
+                                id="propertyPrice"
+                                class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                value="2300000"
+                            >
+                            <span class="currency-symbol">ريال</span>
+                        </div>
+                    </div>
+
+                    <!-- Loan Term Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">مدة التمويل</label>
+                        <div class="relative">
+                            <input
+                                type="number"
+                                id="loanTerm"
+                                class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                value="25"
+                            >
+                            <span class="currency-symbol">سنة</span>
+                        </div>
+                    </div>
+
+                    <!-- Interest Rate Input -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">معدل الربح السنوي</label>
+                        <div class="relative">
+                            <input
+                                type="number"
+                                id="interestRate"
+                                step="0.01"
+                                class="block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                value="3.64"
+                            >
+                            <span class="currency-symbol">%</span>
+                        </div>
+                    </div>
+
+                    <!-- DBR Warning -->
+                    <div id="dbrWarning" class="hidden p-4 rounded-lg bg-red-50 text-red-800 text-sm">
+                        نسبة الاستقطاع تتجاوز الحد المسموح (65%). يرجى تعديل قيمة التمويل أو مدة السداد.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="space-y-6">
+                <!-- Monthly Payment Card -->
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white">
+                    <div class="flex items-baseline justify-between mb-1">
+                        <h3 class="text-lg font-medium text-blue-100">القسط الشهري</h3>
+                        <span id="dbrPercentage" class="bg-white/10 text-blue-100 text-sm px-3 py-1 rounded-lg"></span>
+                    </div>
+                    <div id="monthlyPayment" class="text-4xl font-bold mt-2"></div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-4 border border-gray-200">
+                        <span class="text-sm text-gray-600">مبلغ التمويل</span>
+                        <div id="loanAmount" class="mt-1 text-xl font-semibold text-gray-900"></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-4 border border-gray-200">
+                        <span class="text-sm text-gray-600">إجمالي الربح</span>
+                        <div id="totalInterest" class="mt-1 text-xl font-semibold text-gray-900"></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-4 border border-gray-200">
+                        <span class="text-sm text-gray-600">إجمالي المدفوعات</span>
+                        <div id="totalPayment" class="mt-1 text-xl font-semibold text-gray-900"></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-4 border border-gray-200">
+                        <span class="text-sm text-gray-600">عدد الأقساط</span>
+                        <div id="numberOfPayments" class="mt-1 text-xl font-semibold text-gray-900"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <script>
-        // Utility function to debounce input events
-        function debounce(func, delay) {
+        // localStorage handling
+        const STORAGE_KEY = 'mortgage_calculator_data';
+
+        function saveToLocalStorage() {
+            const data = {
+                salary: document.getElementById('salary').value,
+                propertyPrice: document.getElementById('propertyPrice').value,
+                loanTerm: document.getElementById('loanTerm').value,
+                interestRate: document.getElementById('interestRate').value,
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showToast('تم حفظ البيانات تلقائياً');
+        }
+
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+
+                // Restore values
+                document.getElementById('salary').value = data.salary;
+                document.getElementById('propertyPrice').value = data.propertyPrice;
+                document.getElementById('loanTerm').value = data.loanTerm;
+                document.getElementById('interestRate').value = data.interestRate;
+
+                // Calculate
+                calculateMortgage();
+            }
+        }
+
+        function showToast(message) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function formatNumber(number) {
+            return new Intl.NumberFormat('en').format(number);
+        }
+
+        function formatCurrency(amount) {
+            return formatNumber(Math.round(amount)) + ' ريال';
+        }
+
+        function formatPercentage(value) {
+            return new Intl.NumberFormat('en', {
+                style: 'percent',
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+            }).format(value);
+        }
+
+        function calculateMortgage() {
+            // Get input values
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const loanAmount = parseFloat(document.getElementById('propertyPrice').value) || 0;
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value) || 0;
+            const interestRate = (parseFloat(document.getElementById('interestRate').value) || 0) / 100;
+
+            // Calculate total interest amount (matching Excel formula)
+            const totalInterestAmount = Math.round(interestRate * loanTerm * loanAmount);
+            const totalLoanAmount = loanAmount + totalInterestAmount;
+            const monthlyPayment = totalLoanAmount / (loanTerm * 12);
+            const dbr = monthlyPayment / salary;
+
+            // Update UI
+            document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
+            document.getElementById('loanAmount').textContent = formatCurrency(loanAmount);
+            document.getElementById('totalInterest').textContent = formatCurrency(totalInterestAmount);
+            document.getElementById('totalPayment').textContent = formatCurrency(totalLoanAmount);
+            document.getElementById('numberOfPayments').textContent = formatNumber(loanTerm * 12) + ' قسط';
+            document.getElementById('dbrPercentage').textContent = 'نسبة الاستقطاع: ' + formatPercentage(dbr);
+
+            // Show/hide DBR warning
+            const dbrWarning = document.getElementById('dbrWarning');
+            if (dbr > 0.65) {
+                dbrWarning.classList.remove('hidden');
+            } else {
+                dbrWarning.classList.add('hidden');
+            }
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
             let timeout;
-            return function (...args) {
-                const context = this;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), delay);
+                timeout = setTimeout(later, wait);
             };
         }
 
-        function formatNumberInput(event) {
-            const input = event.target;
-            let value = input.value.replace(/,/g, '');
-            if (!isNaN(value) && value !== '') {
-                input.value = parseFloat(value).toLocaleString('en-US');
-            } else if (value === '') {
-                input.value = '';
-            }
-        }
+        // Debounced save
+        const debouncedSave = debounce(saveToLocalStorage, 1000);
 
-       // Shared calculation logic for interest-only loan
-    function calculateLoan(loanAmount, duration, rate) {
-        const monthlyRate = rate / 12;
-        const monthlyPayment = loanAmount * monthlyRate;
-        const totalInterest = monthlyPayment * duration * 12;
-
-        return {
-            monthlyPayment,
-            totalInterest,
-        };
-    }
-
-         function displayResults(results) {
-            const resultContainer = document.getElementById('results');
-            resultContainer.innerHTML = '';
-
-            results.forEach(({ icon, label, value }) => {
-                 const resultCard = document.createElement('div');
-                resultCard.classList.add('result-card');
-                resultCard.innerHTML = `
-                    <i class="fas ${icon} text-2xl text-gray-500 dark:text-gray-400"></i>
-                    <span class="result-label">${label}</span>
-                    <span class="result-value">${Math.round(value).toLocaleString('en-US')} ريال</span>
-                `;
-                 if (label === 'إجمالي الفائدة'){
-                       const interestNote = document.createElement('p');
-                        interestNote.classList.add('interest-note');
-                        interestNote.textContent = '*يجب سداد كامل مبلغ القرض في نهاية المدة';
-                        resultCard.appendChild(interestNote);
-                    }
-                resultContainer.appendChild(resultCard);
-             });
-           }
-
-        function calculateAffordability() {
-            const salary = parseFloat(document.getElementById('salary').value.replace(/,/g, ''));
-            const duration = parseInt(document.getElementById('duration').value);
-            const rate = parseFloat(document.getElementById('rate').value) / 100;
-            const dbr = 0.65; // Fixed DBR
-
-            if (isNaN(salary) || isNaN(duration) || isNaN(rate) || salary < 0 || duration <= 0 || rate < 0) {
-                document.getElementById('results').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded"><p>الرجاء إدخال قيم صحيحة.</p></div>`;
-                return;
-            }
-
-            const monthlyRate = rate / 12;
-            const maxMonthlyPayment = salary * dbr;
-            const principal = maxMonthlyPayment / monthlyRate;
-
-              const totalLoanAmount = maxMonthlyPayment * duration * 12;
-
-
-            if ((maxMonthlyPayment / salary) > dbr) {
-                document.getElementById('results').innerHTML = `
-                        <div class="p-4 bg-red-100 text-red-700 rounded">
-                            <p>لا يمكن القرض، نسبة الدخل تتجاوز 65%</p>
-                        </div>`;
-            } else {
-                displayResults([
-                    {
-                        icon: "fa-money-bill-wave",
-                        label: "الحد الأقصى لمبلغ القرض",
-                        value: principal,
-                    },
-                    {
-                        icon: "fa-hand-holding-usd",
-                        label: "الدفعة الشهرية",
-                        value: maxMonthlyPayment,
-                    },
-                     {
-                        icon: "fa-coins",
-                        label: "إجمالي القرض",
-                        value: totalLoanAmount,
-                    },
-
-                ]);
-            }
-        }
-
-        function calculatePayment() {
-             const housePrice = parseFloat(document.getElementById('housePrice').value.replace(/,/g, ''));
-            let downPayment = parseFloat(document.getElementById('downPayment').value.replace(/,/g, '') || 0);
-            const duration = parseInt(document.getElementById('loanDuration').value);
-            const rate = parseFloat(document.getElementById('interestRate').value) / 100;
-             const salary = parseFloat(document.getElementById('monthlySalary').value.replace(/,/g, ''));
-             const dbr = 0.65; // Fixed DBR
-
-            if (isNaN(housePrice) || isNaN(duration) || isNaN(rate) || housePrice < 0 || duration <= 0 || rate < 0) {
-                document.getElementById('results').innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded"><p>الرجاء إدخال قيم صحيحة.</p></div>`;
-                return;
-            }
-
-             const loanAmount = housePrice - downPayment;
-             const { monthlyPayment, totalInterest } = calculateLoan(loanAmount, duration, rate);
-
-                if (salary && (monthlyPayment > salary * dbr)) {
-                    document.getElementById('results').innerHTML = `
-                        <div class="p-4 bg-red-100 text-red-700 rounded">
-                            <p>الدفعة تتجاوز حد 65% من دخلك.</p>
-                        </div>`;
-                } else {
-                     displayResults([
-                        {
-                            icon: "fa-hand-holding-usd",
-                            label: "مبلغ القرض",
-                            value: loanAmount,
-                        },
-                        {
-                            icon: "fa-money-bill-wave",
-                            label: "الدفعة الشهرية",
-                            value: monthlyPayment,
-                        },
-                        {
-                            icon: "fa-chart-line",
-                            label: "إجمالي الفائدة",
-                            value: totalInterest,
-                        },
-
-                    ]);
-                }
-        }
-
-
-         function switchTab(tabId) {
-            const tabs = ['affordabilityTab', 'paymentTab'];
-             tabs.forEach(tab => {
-                const button = document.getElementById(`${tab}Button`);
-                const content = document.getElementById(tab);
-                if (tab === tabId) {
-                    button.classList.add('border-blue-500', 'text-blue-500', 'dark:border-blue-400', 'dark:text-blue-400');
-                    button.classList.remove('text-gray-500', 'dark:text-gray-400');
-                     content.classList.remove('hidden');
-                    document.getElementById('results').innerHTML = `<p class="text-gray-500 dark:text-gray-400">النتائج ستظهر هنا...</p>`;
-
-
-                     // Clear active duration classes on tab switch
-                    const durationBoxes = document.querySelectorAll('.duration-box');
-                    durationBoxes.forEach(box => box.classList.remove('active'));
-
-                    if (tabId === 'affordabilityTab') {
-                         handleDurationClick(20, 'duration', false);
-                     }
-                     else if (tabId === 'paymentTab'){
-                         handleDurationClick(20, 'loanDuration', false);
-                     }
-
-
-
-                } else {
-                    button.classList.remove('border-blue-500', 'text-blue-500', 'dark:border-blue-400', 'dark:text-blue-400');
-                    button.classList.add('text-gray-500', 'dark:text-gray-400');
-                    content.classList.add('hidden');
-                }
-            });
-        }
-
-        function handleDurationClick(duration, inputField, shouldCalculate = true) {
-            // Determine the parent container of the current tab
-            const activeTab = document.querySelector('.calculation-tab:not(.hidden)');
-            const durationBoxes = activeTab.querySelectorAll('.duration-box');
-
-            // Remove the active class from all duration boxes in the current tab
-            durationBoxes.forEach(box => box.classList.remove('active'));
-
-            // Find and activate the clicked duration box
-            const selectedBox = activeTab.querySelector(`[data-duration="${duration}"]`);
-            if (selectedBox) {
-                selectedBox.classList.add('active');
-                document.getElementById(inputField).value = duration;
-            }
-
-            if (shouldCalculate) {
-                if (document.getElementById('affordabilityTab').classList.contains('hidden') === false) {
-                    calculateAffordability();
-                } else if (document.getElementById('paymentTab').classList.contains('hidden') === false) {
-                    calculatePayment();
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            switchTab('affordabilityTab');
-             handleDurationClick(20, 'duration', false);
-        });
-
-
-        // Add event listeners with debouncing for input fields
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputs = document.querySelectorAll('input[type="text"], input[type="number"]');
-                // IDs of input fields to save and restore
-            const inputIds = ['salary', 'duration', 'rate', 'housePrice', 'downPayment', 'loanDuration', 'monthlySalary'];
-            // Restore values from localStorage
-             inputIds.forEach(id => {
-                const savedValue = localStorage.getItem(id);
-                if (savedValue) {
-                    const inputElement = document.getElementById(id);
-                    inputElement.value = savedValue;
-
-                    // Handle special cases like duration buttons
-                    if (id === 'duration' || id === 'loanDuration') {
-                        handleDurationClick(parseInt(savedValue), id, false);
-                    }
-                }
-            });
-
-
-            inputs.forEach(input => {
-                input.addEventListener(
-                    'input',
-                    debounce(() => {
-                            // Save values to localStorage on input change
-                          inputIds.forEach(id => {
-                             const inputElement = document.getElementById(id);
-                              if (inputElement) {
-                                localStorage.setItem(id, inputElement.value);
-                            }
-                        });
-                        const activeTab = document.querySelector('.border-blue-500')?.id.replace('Button', '');
-                        if (activeTab === 'affordabilityTab') calculateAffordability();
-                        if (activeTab === 'paymentTab') calculatePayment();
-                    }, 300)
-                );
+        // Add event listeners
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                calculateMortgage();
+                debouncedSave();
             });
         });
+
+        // Load saved data on page load
+        document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+
+        // Initial calculation
+        calculateMortgage();
     </script>
-</head>
-
-<body class="p-6 transition-all duration-300 ease-in-out">
-    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-700 p-8 rounded-lg shadow-xl transition-all duration-300 ease-in-out bg-opacity-80 dark:bg-opacity-80">
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center space-x-3">
-                <i class="fas fa-calculator text-2xl text-blue-500 dark:text-blue-400 mr-2"></i>
-                <h1 class="text-2xl font-bold text-center text-gray-800 dark:text-gray-100">حاسبة التمويل العقاري</h1>
-            </div>
-
-        </div>
-        <p class="text-gray-600 text-center mb-6 dark:text-gray-300">اكتشف كم يمكنك الاقتراض أو احسب دفعاتك الشهرية بسهولة.</p>
-
-        <ul class="flex border-b mb-6 dark:border-gray-600" role="tablist">
-            <li class="mr-2" role="presentation">
-                <button id="affordabilityTabButton" onclick="switchTab('affordabilityTab')"
-                    class="inline-block px-4 py-2 font-semibold text-blue-500 border-b-2 border-blue-500 dark:border-blue-400 dark:text-blue-400 transition-colors duration-300"
-                    role="tab">كم الحد الأعلى للتمويل؟</button>
-            </li>
-            <li role="presentation">
-                <button id="paymentTabButton" onclick="switchTab('paymentTab')"
-                    class="inline-block px-4 py-2 font-semibold text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 border-b-2 border-transparent transition-colors duration-300"
-                    role="tab">كم الدفعة الشهرية لعقار معين؟</button>
-            </li>
-        </ul>
-
-        <div id="affordabilityTab" class="calculation-tab" role="tabpanel">
-            <div class="mb-4 relative">
-                <label for="salary" class="block mb-2 text-gray-800 dark:text-gray-100">الراتب الشهري (ريال):</label>
-                <div class="relative">
-                    <input type="text" id="salary"
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
-                        placeholder="أدخل راتبك الشهري" oninput="formatNumberInput(event)">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="fas fa-money-bill-wave text-gray-400 dark:text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block mb-2 text-gray-800 dark:text-gray-100">مدة القرض (بالسنوات):</label>
-                <div class="flex gap-2">
-                    <div class="duration-box" data-duration="10" onclick="handleDurationClick(10, 'duration')">10</div>
-                    <div class="duration-box" data-duration="15" onclick="handleDurationClick(15, 'duration')">15</div>
-                    <div class="duration-box active" data-duration="20" onclick="handleDurationClick(20, 'duration')">20</div>
-                    <div class="duration-box" data-duration="25" onclick="handleDurationClick(25, 'duration')">25</div>
-                </div>
-                <input type="hidden" id="duration" value="20">
-            </div>
-
-            <div class="mb-4 relative">
-                <label for="rate" class="block mb-2 text-gray-800 dark:text-gray-100">نسبة الفائدة السنوية (%):</label>
-                <div class="relative">
-                    <input type="number" id="rate" step="0.01"
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
-                        value="3.6">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="fas fa-percent text-gray-400 dark:text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="paymentTab" class="calculation-tab hidden" role="tabpanel">
-             <div class="mb-4 relative">
-                <label for="housePrice" class="block mb-2 text-gray-800 dark:text-gray-100">سعر المنزل (ريال):</label>
-                <div class="relative">
-                    <input type="text" id="housePrice"
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
-                        placeholder="أدخل سعر المنزل" oninput="formatNumberInput(event)">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="fas fa-home text-gray-400 dark:text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-             <div class="mb-4 relative">
-                <label for="downPayment" class="block mb-2 text-gray-800 dark:text-gray-100">الدفعة الأولى:</label>
-                <div class="relative">
-                    <input type="text" id="downPayment"
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
-                        placeholder="أدخل الدفعة الأولى" oninput="formatNumberInput(event)">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                       <i class="fas fa-money-bill-wave text-gray-400 dark:text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block mb-2 text-gray-800 dark:text-gray-100">مدة القرض (بالسنوات):</label>
-                <div class="flex gap-2">
-                     <div class="duration-box" data-duration="10" onclick="handleDurationClick(10, 'loanDuration')">10</div>
-                    <div class="duration-box" data-duration="15" onclick="handleDurationClick(15, 'loanDuration')">15</div>
-                    <div class="duration-box active" data-duration="20" onclick="handleDurationClick(20, 'loanDuration')">20</div>
-                    <div class="duration-box" data-duration="25" onclick="handleDurationClick(25, 'loanDuration')">25</div>
-                </div>
-                <input type="hidden" id="loanDuration" value="20">
-            </div>
-            <div class="mb-4 relative">
-                <label for="interestRate" class="block mb-2 text-gray-800 dark:text-gray-100">نسبة الفائدة السنوية (%):</label>
-                <div class="relative">
-                    <input type="number" id="interestRate" step="0.01"
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
-                        value="3.6">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="fas fa-percent text-gray-400 dark:text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-             <div class="mb-4 relative">
-                <label for="monthlySalary" class="block mb-2 text-gray-800 dark:text-gray-100">الراتب الشهري (اختياري، لفحص نسبة الدخل):</label>
-                <div class="relative">
-                    <input type="text" id="monthlySalary"
-                        class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-100 transition-shadow duration-300 pr-10"
-                        placeholder="أدخل راتبك الشهري" oninput="formatNumberInput(event)">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <i class="fas fa-money-bill-wave text-gray-400 dark:text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="results" class="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-center">
-            <p class="text-gray-500 dark:text-gray-400 col-span-full">النتائج ستظهر هنا...</p>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.1/dist/flowbite.min.js"></script>
-
 </body>
-
 </html>
