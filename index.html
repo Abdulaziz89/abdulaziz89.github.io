@@ -197,6 +197,19 @@
                         </div>
                     </div>
 
+                    <!-- First Time Buyer Checkbox -->
+                    <div>
+                        <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                            <input
+                                type="checkbox"
+                                id="firstTimeBuyer"
+                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                checked
+                            >
+                            <span class="text-sm font-medium text-gray-700">مشتري للمرة الأولى (إعفاء من الضريبة على أول مليون ريال)</span>
+                        </label>
+                    </div>
+
                     <!-- DBR Warning -->
                     <div id="dbrWarning" class="hidden p-4 rounded-xl bg-red-50 border border-red-100 text-red-800 text-sm">
                         <div class="flex items-center space-x-2 space-x-reverse">
@@ -242,6 +255,27 @@
                         <div id="numberOfPayments" class="mt-1 text-xl font-semibold text-gray-900"></div>
                     </div>
                 </div>
+
+                <!-- Fees and Taxes Section -->
+                <div class="glass-effect rounded-2xl p-6 border border-gray-200/80 mt-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">الرسوم والضرائب</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">ضريبة التصرفات العقارية (5%)</span>
+                            <span id="rettAmount" class="text-sm font-medium text-gray-900"></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">الرسوم الإدارية للبنك</span>
+                            <span id="bankFees" class="text-sm font-medium text-gray-900"></span>
+                        </div>
+                        <div class="pt-3 border-t border-gray-200">
+                            <div class="flex justify-between items-center">
+                                <span class="text-base font-semibold text-gray-900">إجمالي التكاليف الإضافية</span>
+                                <span id="totalFees" class="text-base font-bold text-gray-900"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -257,6 +291,7 @@
                 downPaymentPercentage: document.getElementById('downPaymentPercentage').value,
                 loanTerm: document.getElementById('loanTerm').value,
                 interestRate: document.getElementById('interestRate').value,
+                firstTimeBuyer: document.getElementById('firstTimeBuyer').checked,
                 lastUpdated: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -272,6 +307,7 @@
                 document.getElementById('downPaymentPercentage').value = data.downPaymentPercentage || 10;
                 document.getElementById('loanTerm').value = data.loanTerm;
                 document.getElementById('interestRate').value = data.interestRate;
+                document.getElementById('firstTimeBuyer').checked = data.firstTimeBuyer !== undefined ? data.firstTimeBuyer : true;
                 calculateMortgage();
             }
         }
@@ -316,6 +352,29 @@
             return propertyPrice - downPaymentAmount;
         }
 
+        function calculateFees(propertyPrice, loanAmount) {
+            const isFirstTimeBuyer = document.getElementById('firstTimeBuyer').checked;
+            
+            // Calculate RETT (5% with first-time buyer exemption on first 1M SAR)
+            let rettAmount = 0;
+            if (isFirstTimeBuyer) {
+                if (propertyPrice > 1000000) {
+                    rettAmount = (propertyPrice - 1000000) * 0.05;
+                }
+            } else {
+                rettAmount = propertyPrice * 0.05;
+            }
+            
+            // Calculate bank administrative fees (1% of loan or 5000 SAR, whichever is lower)
+            const bankFees = Math.min(loanAmount * 0.01, 5000);
+            
+            return {
+                rett: Math.round(rettAmount),
+                bankFees: Math.round(bankFees),
+                total: Math.round(rettAmount + bankFees)
+            };
+        }
+
         function calculateMortgage() {
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const propertyPrice = parseFloat(document.getElementById('propertyPrice').value) || 0;
@@ -328,12 +387,20 @@
             const monthlyPayment = totalLoanAmount / (loanTerm * 12);
             const dbr = monthlyPayment / salary;
 
+            // Calculate fees and taxes
+            const fees = calculateFees(propertyPrice, loanAmount);
+
             document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
             document.getElementById('loanAmount').textContent = formatCurrency(loanAmount);
             document.getElementById('totalInterest').textContent = formatCurrency(totalInterestAmount);
             document.getElementById('totalPayment').textContent = formatCurrency(totalLoanAmount);
             document.getElementById('numberOfPayments').textContent = formatNumber(loanTerm * 12) + ' قسط';
             document.getElementById('dbrPercentage').textContent = 'نسبة الاستقطاع: ' + formatPercentage(dbr);
+            
+            // Display fees
+            document.getElementById('rettAmount').textContent = formatCurrency(fees.rett);
+            document.getElementById('bankFees').textContent = formatCurrency(fees.bankFees);
+            document.getElementById('totalFees').textContent = formatCurrency(fees.total);
 
             // Show/hide DBR warning
             const dbrWarning = document.getElementById('dbrWarning');
