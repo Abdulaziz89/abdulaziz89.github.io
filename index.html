@@ -4,20 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> حاسبة التمويل العقاري</title>
+    <title>حاسبة التمويل العقاري</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #f8fafc;
         }
 
         input[type="number"] {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             text-align: right !important;
             padding-right: 16px !important;
-            padding-left: 80px !important;
+            padding-left: 70px !important;
         }
 
         input[type="number"]::-webkit-inner-spin-button,
@@ -32,16 +31,12 @@
 
         .currency-symbol {
             position: absolute;
-            left: 1rem;
+            left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #6B7280;
+            color: #9CA3AF;
             pointer-events: none;
-        }
-
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            font-size: 0.875rem;
         }
 
         .toast {
@@ -51,7 +46,7 @@
             background: #1f2937;
             color: white;
             padding: 0.75rem 1rem;
-            border-radius: 1rem;
+            border-radius: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             z-index: 50;
             opacity: 0;
@@ -65,214 +60,165 @@
                 transform: translateY(0);
             }
         }
-
-        .card-shine {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-shine::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 80%);
-            transform: rotate(45deg);
-            pointer-events: none;
-        }
     </style>
 </head>
-<body class="min-h-full bg-gradient-to-br from-blue-50 via-white to-blue-50">
+<body class="min-h-full bg-gray-50">
     <!-- Header -->
-    <header class="glass-effect sticky top-0 border-b border-gray-200/80 z-10">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex h-16 items-center justify-between">
-                <div class="flex items-center">
-                    <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
-                        حاسبة التمويل العقاري
-                    </span>
-                </div>
-                <div class="hidden sm:block">
-                    <span class="text-sm text-gray-500">حاسبة التمويل العقاري</span>
-                </div>
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-4">
+                <h1 class="text-2xl font-bold text-gray-900">حاسبة التمويل العقاري</h1>
             </div>
-        </nav>
+        </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">حاسبة التمويل العقاري</h1>
-            <p class="text-lg text-gray-600">احسب قسطك الشهري بدقة وسهولة    </p>
-        </div>
-
-        <div class="grid lg:grid-cols-2 gap-8">
-            <!-- Input Section -->
-            <div class="glass-effect rounded-2xl shadow-lg shadow-blue-500/5 border border-gray-200/80 p-6">
-                <div class="space-y-6">
-                    <!-- Salary Input -->
-                    <div class="group">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الراتب الشهري</label>
-                        <div class="relative">
-                            <input
-                                type="number"
-                                id="salary"
-                                class="block w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:border-blue-200"
-                                value="10000"
-                            >
-                            <span class="currency-symbol">ريال</span>
-                        </div>
-                    </div>
-
-                    <!-- Property Price Input -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">سعر العقار</label>
-                        <div class="relative">
-                            <input
-                                type="number"
-                                id="propertyPrice"
-                                class="block w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:border-blue-200"
-                                value="1500000"
-                            >
-                            <span class="currency-symbol">ريال</span>
-                        </div>
-                    </div>
-
-                    <!-- Down Payment Input -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">الدفعة الأولى</label>
-                        <div class="grid grid-cols-2 gap-3">
+    <main class="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-5 gap-8">
+            <!-- Input Panel -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow p-6 sticky top-8">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-6">البيانات</h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Property Price -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">سعر العقار</label>
                             <div class="relative">
-                                <input
-                                    type="number"
-                                    id="downPaymentPercentage"
-                                    class="block w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:border-blue-200"
-                                    value="10"
-                                    min="10"
-                                    max="90"
-                                >
-                                <span class="currency-symbol">%</span>
-                            </div>
-                            <div class="relative">
-                                <input
-                                    type="number"
-                                    id="downPaymentAmount"
-                                    class="block w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:border-blue-200 bg-gray-50"
-                                    readonly
-                                >
+                                <input type="number" id="propertyPrice" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="1500000">
                                 <span class="currency-symbol">ريال</span>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">الحد الأدنى للدفعة الأولى: 10%</p>
-                    </div>
 
-                    <!-- Loan Term Input -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">مدة التمويل</label>
-                        <div class="relative">
-                            <input
-                                type="number"
-                                id="loanTerm"
-                                class="block w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:border-blue-200"
-                                value="25"
-                            >
-                            <span class="currency-symbol">سنة</span>
+                        <!-- Down Payment -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الدفعة الأولى</label>
+                            <div class="flex gap-2">
+                                <div class="relative flex-1">
+                                    <input type="number" id="downPaymentPercentage" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="10" min="10" max="90">
+                                    <span class="currency-symbol">%</span>
+                                </div>
+                                <div class="relative flex-1">
+                                    <input type="number" id="downPaymentAmount" class="block w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50" readonly>
+                                    <span class="currency-symbol text-xs">ريال</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Interest Rate Input -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">معدل الربح السنوي</label>
-                        <div class="relative">
-                            <input
-                                type="number"
-                                id="interestRate"
-                                step="0.01"
-                                class="block w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 hover:border-blue-200"
-                                value="3.64"
-                            >
-                            <span class="currency-symbol">%</span>
+                        <!-- Loan Term -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">مدة التمويل</label>
+                            <div class="relative">
+                                <input type="number" id="loanTerm" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="25" min="1" max="30">
+                                <span class="currency-symbol">سنة</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- First Time Buyer Checkbox -->
-                    <div>
-                        <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
-                            <input
-                                type="checkbox"
-                                id="firstTimeBuyer"
-                                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                checked
-                            >
-                            <span class="text-sm font-medium text-gray-700">مشتري للمرة الأولى (إعفاء من الضريبة على أول مليون ريال)</span>
-                        </label>
-                    </div>
+                        <!-- Interest Rate -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">معدل الربح السنوي</label>
+                            <div class="relative">
+                                <input type="number" id="interestRate" step="0.01" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="3.64">
+                                <span class="currency-symbol">%</span>
+                            </div>
+                        </div>
 
-                    <!-- DBR Warning -->
-                    <div id="dbrWarning" class="hidden p-4 rounded-xl bg-red-50 border border-red-100 text-red-800 text-sm">
-                        <div class="flex items-center space-x-2 space-x-reverse">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                            <span>نسبة الاستقطاع تتجاوز الحد المسموح (65%). يرجى تعديل قيمة التمويل أو مدة السداد.</span>
+                        <!-- Salary -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">الراتب الشهري</label>
+                            <div class="relative">
+                                <input type="number" id="salary" class="block w-full px-3 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="10000">
+                                <span class="currency-symbol">ريال</span>
+                            </div>
+                        </div>
+
+                        <!-- First Time Buyer -->
+                        <div class="bg-blue-50 p-3 rounded-md">
+                            <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                                <input type="checkbox" id="firstTimeBuyer" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" checked>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-700">مشتري للمرة الأولى</span>
+                                    <p class="text-xs text-gray-600">إعفاء ضريبي على أول مليون ريال</p>
+                                </div>
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Results Section -->
-            <div class="space-y-6">
-                <!-- Monthly Payment Card -->
-                <div class="card-shine bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white shadow-lg shadow-blue-500/20">
-                    <div class="flex items-baseline justify-between mb-2">
-                        <h3 class="text-lg font-medium text-blue-100">القسط الشهري</h3>
-                        <span id="dbrPercentage" class="bg-white/10 text-blue-100 text-sm px-3 py-1 rounded-lg backdrop-blur-sm"></span>
-                    </div>
-                    <div id="monthlyPayment" class="text-5xl font-bold mt-2"></div>
-                </div>
-
-                <!-- Summary Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="glass-effect rounded-2xl p-5 border border-gray-200/80 transition duration-200 hover:border-blue-200">
-                        <span class="text-sm text-gray-600">مبلغ التمويل</span>
-                        <div id="loanAmount" class="mt-1 text-xl font-semibold text-gray-900"></div>
-                    </div>
-
-                    <div class="glass-effect rounded-2xl p-5 border border-gray-200/80 transition duration-200 hover:border-blue-200">
-                        <span class="text-sm text-gray-600">إجمالي الربح</span>
-                        <div id="totalInterest" class="mt-1 text-xl font-semibold text-gray-900"></div>
-                    </div>
-
-                    <div class="glass-effect rounded-2xl p-5 border border-gray-200/80 transition duration-200 hover:border-blue-200">
-                        <span class="text-sm text-gray-600">إجمالي المدفوعات</span>
-                        <div id="totalPayment" class="mt-1 text-xl font-semibold text-gray-900"></div>
-                    </div>
-
-                    <div class="glass-effect rounded-2xl p-5 border border-gray-200/80 transition duration-200 hover:border-blue-200">
-                        <span class="text-sm text-gray-600">عدد الأقساط</span>
-                        <div id="numberOfPayments" class="mt-1 text-xl font-semibold text-gray-900"></div>
-                    </div>
-                </div>
-
-                <!-- Fees and Taxes Section -->
-                <div class="glass-effect rounded-2xl p-6 border border-gray-200/80 mt-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">الرسوم والضرائب</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">ضريبة التصرفات العقارية (5%)</span>
-                            <span id="rettAmount" class="text-sm font-medium text-gray-900"></span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">الرسوم الإدارية للبنك</span>
-                            <span id="bankFees" class="text-sm font-medium text-gray-900"></span>
-                        </div>
-                        <div class="pt-3 border-t border-gray-200">
-                            <div class="flex justify-between items-center">
-                                <span class="text-base font-semibold text-gray-900">إجمالي التكاليف الإضافية</span>
-                                <span id="totalFees" class="text-base font-bold text-gray-900"></span>
+            <!-- Results Panel -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Monthly Payment Hero -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-8 text-white">
+                    <div class="text-center">
+                        <p class="text-blue-100 text-sm mb-2">القسط الشهري</p>
+                        <p id="monthlyPayment" class="text-5xl font-bold mb-4">0 ريال</p>
+                        <div class="flex justify-center items-center gap-6 text-sm">
+                            <div>
+                                <span class="text-blue-200">نسبة الاستقطاع:</span>
+                                <span id="dbrPercentage" class="font-semibold mr-1">0%</span>
                             </div>
+                            <div>
+                                <span class="text-blue-200">عدد الأقساط:</span>
+                                <span id="numberOfPayments" class="font-semibold mr-1">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DBR Warning -->
+                <div id="dbrWarning" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-start space-x-2 space-x-reverse">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-red-800">نسبة الاستقطاع تتجاوز 65%</p>
+                            <p class="text-xs text-red-700 mt-0.5">قد يتم رفض طلب التمويل. حاول تقليل المبلغ أو زيادة مدة السداد.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Breakdown -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">تفصيل التكاليف</h3>
+                        
+                        <!-- Loan Details -->
+                        <div class="space-y-3 pb-4 mb-4 border-b border-gray-200">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">مبلغ التمويل</span>
+                                <span id="loanAmount" class="font-medium text-gray-900">0 ريال</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">إجمالي الربح</span>
+                                <span id="totalInterest" class="font-medium text-gray-900">0 ريال</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">إجمالي المدفوعات</span>
+                                <span id="totalPayment" class="font-medium text-gray-900">0 ريال</span>
+                            </div>
+                        </div>
+
+                        <!-- Fees -->
+                        <div class="space-y-3 pb-4 mb-4 border-b border-gray-200">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">ضريبة التصرفات العقارية (5%)</span>
+                                <span id="rettAmount" class="font-medium text-gray-900">0 ريال</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">رسوم إدارية للبنك</span>
+                                <span id="bankFees" class="font-medium text-gray-900">0 ريال</span>
+                            </div>
+                        </div>
+
+                        <!-- Grand Total -->
+                        <div class="bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="text-base font-semibold text-gray-900">التكلفة الإجمالية</span>
+                                <span id="grandTotal" class="text-2xl font-bold text-gray-900">0 ريال</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-1">سعر العقار + الأرباح + الرسوم والضرائب</p>
                         </div>
                     </div>
                 </div>
@@ -281,7 +227,6 @@
     </main>
 
     <script>
-        // Keep the existing JavaScript code unchanged
         const STORAGE_KEY = 'mortgage_calculator_data';
 
         function saveToLocalStorage() {
@@ -295,7 +240,7 @@
                 lastUpdated: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            showToast('تم حفظ البيانات تلقائياً');
+            showToast('تم حفظ البيانات');
         }
 
         function loadFromLocalStorage() {
@@ -378,7 +323,7 @@
         function calculateMortgage() {
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const propertyPrice = parseFloat(document.getElementById('propertyPrice').value) || 0;
-            const loanAmount = calculateDownPayment(); // Calculate actual loan amount after down payment
+            const loanAmount = calculateDownPayment();
             const loanTerm = parseFloat(document.getElementById('loanTerm').value) || 0;
             const interestRate = (parseFloat(document.getElementById('interestRate').value) || 0) / 100;
 
@@ -390,17 +335,21 @@
             // Calculate fees and taxes
             const fees = calculateFees(propertyPrice, loanAmount);
 
+            // Update all fields
             document.getElementById('monthlyPayment').textContent = formatCurrency(monthlyPayment);
+            document.getElementById('dbrPercentage').textContent = formatPercentage(dbr);
+            document.getElementById('numberOfPayments').textContent = formatNumber(loanTerm * 12);
+            
             document.getElementById('loanAmount').textContent = formatCurrency(loanAmount);
             document.getElementById('totalInterest').textContent = formatCurrency(totalInterestAmount);
             document.getElementById('totalPayment').textContent = formatCurrency(totalLoanAmount);
-            document.getElementById('numberOfPayments').textContent = formatNumber(loanTerm * 12) + ' قسط';
-            document.getElementById('dbrPercentage').textContent = 'نسبة الاستقطاع: ' + formatPercentage(dbr);
             
-            // Display fees
             document.getElementById('rettAmount').textContent = formatCurrency(fees.rett);
             document.getElementById('bankFees').textContent = formatCurrency(fees.bankFees);
-            document.getElementById('totalFees').textContent = formatCurrency(fees.total);
+            
+            // Grand total
+            const grandTotal = propertyPrice + totalInterestAmount + fees.total;
+            document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
 
             // Show/hide DBR warning
             const dbrWarning = document.getElementById('dbrWarning');
