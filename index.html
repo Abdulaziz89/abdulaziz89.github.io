@@ -298,7 +298,7 @@
             return propertyPrice - downPaymentAmount;
         }
 
-        function calculateFees(propertyPrice, loanAmount) {
+        function calculateFees(propertyPrice, baseLoanAmount) {
             const isFirstTimeBuyer = document.getElementById('firstTimeBuyer').checked;
             
             // Calculate RETT (5% with first-time buyer exemption on first 1M SAR)
@@ -311,8 +311,8 @@
                 rettAmount = propertyPrice * 0.05;
             }
             
-            // Calculate bank administrative fees (1% of loan or 5000 SAR, whichever is lower)
-            const bankFees = Math.min(loanAmount * 0.01, 5000);
+            // Calculate bank administrative fees (1% of base loan or 5000 SAR, whichever is lower)
+            const bankFees = Math.min(baseLoanAmount * 0.01, 5000);
             
             return {
                 rett: Math.round(rettAmount),
@@ -351,8 +351,8 @@
             document.getElementById('rettAmount').textContent = formatCurrency(fees.rett);
             document.getElementById('bankFees').textContent = formatCurrency(fees.bankFees);
             
-            // Grand total
-            const grandTotal = propertyPrice + totalInterestAmount + fees.total;
+            // Grand total (property price + all interest, fees already included in loan)
+            const grandTotal = propertyPrice + totalInterestAmount;
             document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
 
             // Show/hide DBR warning
