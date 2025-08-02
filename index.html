@@ -4,7 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة التمويل العقاري</title>
+    <title>حاسبة التمويل العقاري - احسب قسطك الشهري</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="حاسبة التمويل العقاري - احسب قسطك الشهري">
+    <meta name="description" content="احسب قسطك الشهري للتمويل العقاري مع حساب ضريبة التصرفات العقارية والرسوم البنكية. حاسبة دقيقة وسهلة الاستخدام">
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tamweel.info/">
+    <meta property="og:title" content="حاسبة التمويل العقاري - احسب قسطك الشهري">
+    <meta property="og:description" content="احسب قسطك الشهري للتمويل العقاري مع حساب ضريبة التصرفات العقارية والرسوم البنكية. حاسبة دقيقة وسهلة الاستخدام">
+    <meta property="og:image" content="https://tamweel.info/og-image.png">
+    <meta property="og:locale" content="ar_SA">
+    <meta property="og:site_name" content="حاسبة التمويل العقاري">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://tamweel.info/">
+    <meta property="twitter:title" content="حاسبة التمويل العقاري - احسب قسطك الشهري">
+    <meta property="twitter:description" content="احسب قسطك الشهري للتمويل العقاري مع حساب ضريبة التصرفات العقارية والرسوم البنكية">
+    <meta property="twitter:image" content="https://tamweel.info/og-image.png">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="author" content="حاسبة التمويل العقاري">
+    <meta name="keywords" content="تمويل عقاري, حاسبة تمويل, قسط شهري, ضريبة التصرفات العقارية, رسوم بنكية, السعودية">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Arabic">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -384,15 +415,20 @@
         const inputs = document.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('input', () => {
-                // Handle down payment percentage changes
-                if (input.id === 'downPaymentPercentage') {
-                    const percentage = parseFloat(input.value);
-                    if (percentage < 10) input.value = 10;
-                    if (percentage > 90) input.value = 90;
-                }
                 calculateMortgage();
                 debouncedSave();
             });
+            
+            // Handle down payment percentage validation on blur (when user finishes editing)
+            if (input.id === 'downPaymentPercentage') {
+                input.addEventListener('blur', () => {
+                    const percentage = parseFloat(input.value) || 10;
+                    if (percentage < 10) input.value = 10;
+                    if (percentage > 90) input.value = 90;
+                    calculateMortgage();
+                    debouncedSave();
+                });
+            }
         });
 
         // Load saved data on page load
