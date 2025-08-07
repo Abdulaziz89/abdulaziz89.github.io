@@ -70,27 +70,6 @@
             font-size: 0.875rem;
         }
 
-        .toast {
-            position: fixed;
-            bottom: 1rem;
-            left: 1rem;
-            background: #1f2937;
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            z-index: 50;
-            opacity: 0;
-            transform: translateY(1rem);
-            animation: slideIn 0.3s ease forwards;
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
     </style>
 </head>
 <body class="min-h-full bg-gray-50">
@@ -197,6 +176,34 @@
                     </div>
                 </div>
 
+                <!-- Remaining Salary -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">المتبقي من الراتب</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">المبلغ المتبقي</span>
+                            <span id="remainingSalary" class="text-2xl font-bold text-green-600">0 ريال</span>
+                        </div>
+                        <div class="relative pt-1">
+                            <div class="flex mb-2 items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-semibold inline-block text-gray-600">
+                                        نسبة المتبقي
+                                    </span>
+                                </div>
+                                <div class="text-right">
+                                    <span id="remainingPercentage" class="text-xs font-semibold inline-block text-gray-600">
+                                        0%
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="overflow-hidden h-2 text-xs flex rounded bg-gray-200">
+                                <div id="remainingBar" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- DBR Warning -->
                 <div id="dbrWarning" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
                     <div class="flex items-start space-x-2 space-x-reverse">
@@ -272,7 +279,6 @@
                 lastUpdated: new Date().toISOString()
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            showToast('تم حفظ البيانات');
         }
 
         function loadFromLocalStorage() {
@@ -289,20 +295,6 @@
             }
         }
 
-        function showToast(message) {
-            const existingToast = document.querySelector('.toast');
-            if (existingToast) {
-                existingToast.remove();
-            }
-
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-
-            document.body.appendChild(toast);
-
-            setTimeout(() => toast.remove(), 3000);
-        }
 
         function formatNumber(number) {
             return new Intl.NumberFormat('en').format(number);
@@ -385,6 +377,29 @@
             // Grand total (property price + all interest, fees already included in loan)
             const grandTotal = propertyPrice + totalInterestAmount;
             document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
+
+            // Calculate and display remaining salary
+            const remainingSalary = salary - monthlyPayment;
+            const remainingPercentage = salary > 0 ? (remainingSalary / salary) : 0;
+            
+            document.getElementById('remainingSalary').textContent = formatCurrency(remainingSalary);
+            document.getElementById('remainingPercentage').textContent = formatPercentage(remainingPercentage);
+            document.getElementById('remainingBar').style.width = Math.max(0, remainingPercentage * 100) + '%';
+            
+            // Update remaining salary color based on percentage
+            const remainingSalaryElement = document.getElementById('remainingSalary');
+            const remainingBarElement = document.getElementById('remainingBar');
+            
+            if (remainingPercentage < 0.2) {
+                remainingSalaryElement.className = 'text-2xl font-bold text-red-600';
+                remainingBarElement.className = 'shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500';
+            } else if (remainingPercentage < 0.35) {
+                remainingSalaryElement.className = 'text-2xl font-bold text-yellow-600';
+                remainingBarElement.className = 'shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-500';
+            } else {
+                remainingSalaryElement.className = 'text-2xl font-bold text-green-600';
+                remainingBarElement.className = 'shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500';
+            }
 
             // Show/hide DBR warning
             const dbrWarning = document.getElementById('dbrWarning');
